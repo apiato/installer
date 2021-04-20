@@ -1,0 +1,15 @@
+{
+    "name": "apiato/installer",
+    "description": "Apiato application installer.",
+
+    "require": {
+        "php": "^7.4|^8.0",
+        "symfony/console": "5.2.6",
+        "symfony/process": "5.2.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Apiato\\Installer\\Console\\": "commands/"
+        }
+    }
+}

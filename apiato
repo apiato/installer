@@ -1,0 +1,14 @@
+#!/usr/bin/env php
+<?php
+
+use Apiato\Installer\Console\NewCommand;
+use Symfony\Component\Console\Application;
+
+require __DIR__ . './vendor/autoload.php';
+
+$application = new Application('Apiato Installer', '0.1.0-alpha.1');
+
+# add our commands
+$application->add(new NewCommand());
+
+$application->run();
