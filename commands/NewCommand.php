@@ -60,8 +60,7 @@ class NewCommand extends Command
         $composer = $this->findComposer();
 
         $commands = [
-            //  TODO: remove specific version for stable version release
-            $composer . " create-project apiato/apiato:10.0.0-rc.11 \"$directory\" $version --remove-vcs --prefer-dist",
+            $composer . " create-project apiato/apiato \"$directory\" $version --remove-vcs --prefer-dist",
         ];
 
         if ($directory != '.' && $input->getOption('force')) {
@@ -77,28 +76,9 @@ class NewCommand extends Command
         }
 
         if (($process = $this->runCommands($commands, $input, $output))->isSuccessful()) {
-            if ($name !== '.') {
-                $this->replaceInFile(
-                    'APP_URL=http://localhost',
-                    'APP_URL=http://' . $name . '.test',
-                    $directory . '/.env'
-                );
 
-                $this->replaceInFile(
-                    'DB_DATABASE=laravel',
-                    'DB_DATABASE=' . str_replace('-', '_', strtolower($name)),
-                    $directory . '/.env'
-                );
-
-                $this->replaceInFile(
-                    'DB_DATABASE=laravel',
-                    'DB_DATABASE=' . str_replace('-', '_', strtolower($name)),
-                    $directory . '/.env.example'
-                );
-            }
-
-            //  TODO: Remove github checks if dont want to implement github support
-            if ($input->getOption('git') || $input->getOption('github') !== false) {
+            //  TODO: Remove github checks if don't want to implement github support
+            if ($input->getOption('git')/* || $input->getOption('github') !== false*/) {
                 $this->createRepository($directory, $input, $output);
             }
 
@@ -124,7 +104,7 @@ class NewCommand extends Command
     }
 
     /**
-     * Create a Git repository and commit the base Laravel skeleton.
+     * Create a Git repository and commit the base Apiato skeleton.
      *
      * @param  string  $directory
      * @param  \Symfony\Component\Console\Input\InputInterface  $input
