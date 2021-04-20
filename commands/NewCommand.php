@@ -1,6 +1,6 @@
 <?php
 
-namespace Apiato\Installer\Console;
+namespace Apiato\Installer\Commands;
 
 use RuntimeException;
 use Symfony\Component\Console\Command\Command;
@@ -31,14 +31,14 @@ class NewCommand extends Command
     {
 
         $output->writeln([
-            '<fg=red>' . PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL,
+            '<fg=red>' . PHP_EOL . PHP_EOL . PHP_EOL,
             "     ___      .______    __       ___   .___________.  ______   ",
             "    /   \     |   _  \  |  |     /   \  |           | /  __  \  ",
             "   /  ^  \    |  |_)  | |  |    /  ^  \ `---|  |----`|  |  |  | ",
             "  /  /_\  \   |   ___/  |  |   /  /_\  \    |  |     |  |  |  | ",
             " /  _____  \  |  |      |  |  /  _____  \   |  |     |  `--'  | ",
             "/__/     \__\ | _|      |__| /__/     \__\  |__|      \______/  ",
-            '</>' . PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL . PHP_EOL,
+            '</>' . PHP_EOL . PHP_EOL . PHP_EOL,
         ]);
 
         sleep(1);

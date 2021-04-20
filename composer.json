@@ -9,7 +9,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Apiato\\Installer\\Console\\": "commands/"
+            "Apiato\\Installer\\Commands\\": "commands/"
         }
     }
 }
