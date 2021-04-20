@@ -21,6 +21,8 @@ class NewCommand extends Command
             ->setDescription('Create a new Apiato application')
             ->addArgument('name', InputArgument::REQUIRED)
             ->addOption('dev', null, InputOption::VALUE_NONE, 'Installs the latest "development" release')
+            ->addOption('git', null, InputOption::VALUE_NONE, 'Initialize a Git repository')
+            ->addOption('branch', null, InputOption::VALUE_REQUIRED, 'The branch that should be created for a new repository', 'main')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Forces install even if the directory already exists')
             ->setHelp('This command only shows a message to welcome user and nothing more.');
     }
@@ -95,6 +97,11 @@ class NewCommand extends Command
                 );
             }
 
+            //  TODO: Remove github checks if dont want to implement github support
+            if ($input->getOption('git') || $input->getOption('github') !== false) {
+                $this->createRepository($directory, $input, $output);
+            }
+
             $output->writeln(PHP_EOL . '<comment>Apiato ready! Build something amazing.</comment>');
         }
 
@@ -114,6 +121,29 @@ class NewCommand extends Command
         }
 
         return '';
+    }
+
+    /**
+     * Create a Git repository and commit the base Laravel skeleton.
+     *
+     * @param  string  $directory
+     * @param  \Symfony\Component\Console\Input\InputInterface  $input
+     * @param  \Symfony\Component\Console\Output\OutputInterface  $output
+     * @return void
+     */
+    protected function createRepository(string $directory, InputInterface $input, OutputInterface $output)
+    {
+        chdir($directory);
+
+        $branch = $input->getOption('branch') ?: 'main';
+
+        $commands = [
+            "git init -q -b {$branch} .",
+            'git add .',
+            'git commit -q -m "Set up a fresh Apiato app"',
+        ];
+
+        $this->runCommands($commands, $input, $output);
     }
 
     /**
