@@ -2,6 +2,7 @@
     "name": "apiato/installer",
     "description": "Apiato application installer.",
     "keywords": ["apiato"],
+    "license": "MIT",
     "require": {
         "php": "^7.4|^8.0",
         "symfony/console": "5.2.6",
