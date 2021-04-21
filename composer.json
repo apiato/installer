@@ -8,6 +8,9 @@
         "symfony/console": "^5.0",
         "symfony/process": "^5.0"
     },
+    "bin": [
+        "bin/apiato"
+    ],
     "autoload": {
         "psr-4": {
             "Apiato\\Installer\\Commands\\": "commands/",
