@@ -4,9 +4,9 @@
 use Apiato\Installer\Commands\NewCommand;
 use Symfony\Component\Console\Application;
 
-require __DIR__ . './vendor/autoload.php';
+require __DIR__ . '../vendor/autoload.php';
 
-$application = new Application('Apiato Installer', '0.1.2');
+$application = new Application('Apiato Installer', '0.1.3');
 
 # add our commands
 $application->add(new NewCommand());
