@@ -10,7 +10,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Apiato\\Installer\\Commands\\": "commands/"
+            "Apiato\\Installer\\Commands\\": "commands/",
+            "Apiato\\Installer\\Traits\\": "traits/"
         }
     }
 }
