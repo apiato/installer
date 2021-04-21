@@ -89,9 +89,42 @@ class NewCommand extends Command
             if ($input->getOption('git')/* || $input->getOption('github') !== false*/) {
                 $this->createRepository($directory, $input, $output);
             }
-
-            $output->writeln(PHP_EOL . '<comment>Apiato ready! Build something amazing.</comment>');
         }
+
+        $helper = $this->getHelper('question');
+
+        $confirmation = new ConfirmationQuestion('Now do you want to add additional containers? [default: no] ', false);
+
+        $availableContainers = [
+            'Social Authentication' => 'apiato/social-auth-container',
+            'Localization' => 'apiato/localization-container',
+            'Payments' => 'apiato/payment-container',
+            'Settings' => 'apiato/settings-container',
+        ];
+
+        if ($helper->ask($input, $output, $confirmation)) {
+            $question = new ChoiceQuestion(
+                'Select all containers you want to install (example: 2,3,4).',
+                array_keys($availableContainers)
+            );
+
+            $question->setMultiselect(true);
+
+            $selectedContainersArray = $helper->ask($input, $output, $question);
+            $selectedContainersString = "";
+            $commands = ['cd ' . $directory];
+
+            foreach (array_keys($availableContainers) as $availableContainer) {
+                if (in_array($availableContainer, $selectedContainersArray)) {
+                    $selectedContainersString .= ' ' . $availableContainers[$availableContainer];
+                }
+            }
+
+            array_push($commands, $composer . " require" . $selectedContainersString);
+            $this->runCommands($commands, $input, $output);
+        }
+
+        $output->writeln(PHP_EOL . '<comment>Apiato ready! Build something amazing.</comment>');
 
         return $process->getExitCode();
     }
