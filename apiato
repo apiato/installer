@@ -6,7 +6,7 @@ use Symfony\Component\Console\Application;
 
 require __DIR__ . './vendor/autoload.php';
 
-$application = new Application('Apiato Installer', '0.1.0-alpha.1');
+$application = new Application('Apiato Installer', '0.1.0');
 
 # add our commands
 $application->add(new NewCommand());
