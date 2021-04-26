@@ -23,6 +23,13 @@ class NewCommand extends Command
 
     protected static $defaultName = 'new';
 
+    protected static $availableContainers = [
+        'Social Authentication' => 'apiato/social-auth-container',
+        'Localization' => 'apiato/localization-container',
+        'Payments' => 'apiato/payment-container',
+        'Settings' => 'apiato/settings-container',
+    ];
+
     protected function configure()
     {
         $this
@@ -38,6 +45,13 @@ class NewCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
+        //  Init
+        $helper = $this->getHelper('question');
+        $name = $input->getArgument('name');
+        $directory = $name !== '.' ? getcwd() . '/' . $name : '.';
+        $version = $this->getVersion($input);
+        $composer = $this->findComposer();
+
         $output->writeln([
             '<fg=red>' . PHP_EOL . PHP_EOL . PHP_EOL,
             "     ___      .______    __       ___   .___________.  ______   ",
@@ -51,11 +65,32 @@ class NewCommand extends Command
 
         sleep(1);
 
-        $name = $input->getArgument('name');
+        //  Ask for configurations
 
-        $directory = $name !== '.' ? getcwd() . '/' . $name : '.';
+        $confirmation = new ConfirmationQuestion('Do you want to add additional containers? (yes/no) [no] ', false);
+        $installContainersCommand = null;
 
-        $version = $this->getVersion($input);
+        if ($helper->ask($input, $output, $confirmation)) {
+            $question = new ChoiceQuestion(
+                'Select all containers you want to install (example: 2,3,4).',
+                array_keys(self::$availableContainers)
+            );
+
+            $question->setMultiselect(true);
+
+            $selectedContainersArray = $helper->ask($input, $output, $question);
+            $selectedContainersString = "";
+            $installContainersCommand = ['cd ' . $directory];
+
+            foreach (array_keys(self::$availableContainers) as $availableContainer) {
+                if (in_array($availableContainer, $selectedContainersArray)) {
+                    $selectedContainersString .= ' ' . self::$availableContainers[$availableContainer];
+                }
+            }
+            array_push($installContainersCommand, $composer . " require" . $selectedContainersString);
+        }
+
+        //  Start installing project
 
         if (!$input->getOption('force')) {
             $this->verifyApplicationDoesntExist($directory);
@@ -64,8 +99,6 @@ class NewCommand extends Command
         if ($input->getOption('force') && $directory === '.') {
             throw new RuntimeException('Cannot use --force option when using current directory for installation!');
         }
-
-        $composer = $this->findComposer();
 
         $commands = [
             $composer . " create-project apiato/apiato \"$directory\" $version --remove-vcs --prefer-dist",
@@ -91,39 +124,10 @@ class NewCommand extends Command
             }
         }
 
-        $helper = $this->getHelper('question');
+        //  Install additional containers
+        if ($installContainersCommand) $this->runCommands($installContainersCommand, $input, $output);
 
-        $confirmation = new ConfirmationQuestion('Now do you want to add additional containers? [default: no] ', false);
-
-        $availableContainers = [
-            'Social Authentication' => 'apiato/social-auth-container',
-            'Localization' => 'apiato/localization-container',
-            'Payments' => 'apiato/payment-container',
-            'Settings' => 'apiato/settings-container',
-        ];
-
-        if ($helper->ask($input, $output, $confirmation)) {
-            $question = new ChoiceQuestion(
-                'Select all containers you want to install (example: 2,3,4).',
-                array_keys($availableContainers)
-            );
-
-            $question->setMultiselect(true);
-
-            $selectedContainersArray = $helper->ask($input, $output, $question);
-            $selectedContainersString = "";
-            $commands = ['cd ' . $directory];
-
-            foreach (array_keys($availableContainers) as $availableContainer) {
-                if (in_array($availableContainer, $selectedContainersArray)) {
-                    $selectedContainersString .= ' ' . $availableContainers[$availableContainer];
-                }
-            }
-
-            array_push($commands, $composer . " require" . $selectedContainersString);
-            $this->runCommands($commands, $input, $output);
-        }
-
+        //  The End
         $output->writeln(PHP_EOL . '<comment>Apiato ready! Build something amazing.</comment>');
 
         return $process->getExitCode();
